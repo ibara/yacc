@@ -21,12 +21,15 @@ else ifeq ($(UNAME_S),NetBSD)
 OBJS+=	portable/reallocarray.o
 else ifeq ($(UNAME_S),DragonFly)
 CFLAGS+=-D__dead="__dead2"
+else ifeq ($(UNAME_S),Darwin)
+CFLAGS+=-D__dead="__attribute__((__noreturn__))"
+OBJS+=	portable/reallocarray.o
 else ifeq ($(UNAME_S),Linux)
 CFLAGS+=-D_GNU_SOURCE -D__dead="__attribute__((__noreturn__))"
 OBJS+=	portable/reallocarray.o portable/strlcpy.o
 else ifeq ($(UNAME_S),SunOS)
-CFLAGS+=-D__dead=""
-OBJS+=	portable/asprintf.o portable/reallocarray.o portable/strlcpy.o
+CFLAGS=	-xO2 -D__dead=""
+OBJS+=	portable/asprintf.o portable/reallocarray.o
 else ifeq ($(UNAME_S),AIX)
 CC=	xlc
 CFLAGS=	-O3 -qstrict -qro -qroconst -D__dead=""

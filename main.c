@@ -346,13 +346,13 @@ open_files(void)
 int
 main(int argc, char *argv[])
 {
+#if defined(_AIX) || defined(__sun)
+	__progname = argv[0];
+#endif
+
 #ifdef __OpenBSD__
 	if (pledge("stdio rpath wpath cpath", NULL) == -1)
 		fatal("pledge: invalid arguments");
-#endif
-
-#if defined(_AIX)
-	char *__progname = argv[0];
 #endif
 
 	set_signals();

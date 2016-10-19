@@ -1,5 +1,5 @@
 /*
- * This file was written by Brian Callahan <bcallah@devio.us>
+ * This file written by Brian Callahan <bcallah@devio.us>
  * and released into the Public Domain.
  */
 
@@ -16,13 +16,21 @@ asprintf(char **ret, const char *format, ...)
 	va_list argl;
 
 	va_start(argl, format);
-	retval = vsprintf(NULL, format, argl);
-	if ((*ret = malloc(retval + 1)) == NULL)
+
+	if ((retval = vsprintf(NULL, format, argl)) < 0) {
 		retval = -1;
-	if (retval >= 0)
-		retval = vsprintf(*ret, format, argl);
-	else
+		goto out;
+	}
+
+	if ((*ret = malloc(retval + 1)) == NULL) {
 		retval = -1;
+		goto out;
+	}
+
+	if ((retval = vsprintf(*ret, format, argl)) < 0)
+		retval = -1;
+
+out:
 	va_end(argl);
 
 	return retval;

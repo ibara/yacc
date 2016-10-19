@@ -17,8 +17,15 @@
 
 #include <sys/types.h>
 #include <errno.h>
+#include <limits.h>
+#if !defined(_AIX) && !defined(__sun)
 #include <stdint.h>
+#endif
 #include <stdlib.h>
+
+#ifndef SIZE_MAX
+#define SIZE_MAX ULONG_MAX
+#endif
 
 /*
  * This is sqrt(SIZE_MAX+1), as s1*s2 <= SIZE_MAX

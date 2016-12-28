@@ -104,6 +104,9 @@ install: all
 	install -m 444 yacc.1 \${DESTDIR}\${MANDIR}/\${PROG}.1
 	install -m 444 yyfix.1 \${DESTDIR}\${MANDIR}/$fix.1
 
+test:
+	echo "No tests"
+
 clean:
 	rm -f \${PROG} \${OBJS}
 

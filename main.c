@@ -346,7 +346,7 @@ open_files(void)
 int
 main(int argc, char *argv[])
 {
-#if defined(_AIX) || defined(__sun)
+#ifdef NEED_PROGNAME
 	__progname = argv[0];
 #endif
 

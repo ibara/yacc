@@ -41,9 +41,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#ifndef __OpenBSD__
 #include "portable/portable.h"
-#endif
 
 /*  machine-dependent definitions			*/
 /*  the following definitions are for the Tahoe		*/

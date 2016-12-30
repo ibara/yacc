@@ -18,10 +18,9 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <limits.h>
-#if !defined(_AIX) && !defined(__sun)
-#include <stdint.h>
-#endif
 #include <stdlib.h>
+
+#ifdef NEED_REALLOCARRAY
 
 #ifndef SIZE_MAX
 #define SIZE_MAX ULONG_MAX
@@ -43,3 +42,5 @@ reallocarray(void *optr, size_t nmemb, size_t size)
 	}
 	return realloc(optr, size * nmemb);
 }
+
+#endif /* NEED_REALLOCARRAY */

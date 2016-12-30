@@ -34,4 +34,4 @@ the `portable/` directory are ISC licensed. Everything else is Public Domain.
 
 Get a tarball
 -------------
-https://devio.us/~bcallah/yacc/yacc-20161228.tar.gz
+https://devio.us/~bcallah/yacc/yacc-20161229.tar.gz

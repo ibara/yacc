@@ -41,7 +41,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "portable/portable.h"
+#include "portable.h"
 
 /*  machine-dependent definitions			*/
 /*  the following definitions are for the Tahoe		*/

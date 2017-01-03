@@ -29,9 +29,9 @@ compatibility.
 
 Licensing
 ---------
-All C files in the top level directory are 3-clause BSD licensed. Some files in
-the `portable/` directory are ISC licensed. Everything else is Public Domain.
+All C files other than `portable.c` are 3-clause BSD licensed.
+`portable.c` has a combination of Public Domain and ISC licensed code.
 
 Get a tarball
 -------------
-https://devio.us/~bcallah/yacc/yacc-20161230.tar.gz
+https://devio.us/~bcallah/yacc/yacc-20170103.tar.gz

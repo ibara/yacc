@@ -4,6 +4,7 @@
 
 # Figure out C compiler.
 # We can probably assume gcc is available, so it's the failsafe.
+printf "Checking for C compiler... "
 if [ "x$CC" != "x" ] ; then
   cc="$CC"
 else
@@ -19,13 +20,14 @@ else
       if [ $? -eq 0 ] ; then
 	cc="gcc"
       else
-	echo "No C compiler found."
+	echo "not found"
 	echo "Please manually set your C compiler with the CC env variable."
 	exit 1
       fi
     fi
   fi
 fi
+echo "$cc"
 
 printf "Checking for yacc... "
 

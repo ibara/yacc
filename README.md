@@ -34,4 +34,4 @@ All C files other than `portable.c` are 3-clause BSD licensed.
 
 Get a tarball
 -------------
-https://devio.us/~bcallah/yacc/yacc-20170103.tar.gz
+https://devio.us/~bcallah/yacc/yacc-20170110.tar.gz

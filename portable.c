@@ -15,6 +15,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "portable.h"
+
 int
 asprintf(char **ret, const char *format, ...)
 {
@@ -28,7 +30,12 @@ asprintf(char **ret, const char *format, ...)
 		goto out;
 	}
 
-	retval = vsnprintf(*ret, 32, format, ap);
+	if ((retval = vsprintf(*ret, format, ap)) > 31) {
+		(void) fprintf(stderr,
+			       "%s: possible buffer overflow attack!\n",
+			       __progname);
+		exit(1);
+	}
 
 out:
 	va_end(ap);

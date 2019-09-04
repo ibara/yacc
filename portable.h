@@ -3,20 +3,22 @@
  * and released into the Public Domain.
  */
 
-#ifdef NEED_REALLOCARRAY
-void   *reallocarray(void *, size_t, size_t);
+#include "config.h"
+
+#ifndef HAVE_ASPRINTF
+extern int	 asprintf(char **, const char *, ...);
 #endif
 
-#ifdef NEED_STRLCPY
-size_t	strlcpy(char *, const char *, size_t);
+#ifndef HAVE_REALLOCARRAY
+extern void	*reallocarray(void *, size_t, size_t);
 #endif
 
-#ifdef NEED_ASPRINTF
-int	asprintf(char **, const char *, ...);
+#ifndef HAVE_STRLCPY
+extern size_t	 strlcpy(char *, const char *, size_t);
 #endif
 
-#ifdef NEED_PROGNAME
-char *__progname;
+#ifndef HAVE_PROGNAME
+extern char	*__progname;
 #endif
 
 #ifndef _PATH_TMP

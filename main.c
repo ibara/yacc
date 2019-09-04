@@ -350,7 +350,7 @@ main(int argc, char *argv[])
 	__progname = argv[0];
 #endif
 
-#ifdef __OpenBSD__
+#ifdef HAVE_PLEDGE
 	if (pledge("stdio rpath wpath cpath", NULL) == -1)
 		fatal("pledge: invalid arguments");
 #endif

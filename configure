@@ -1,219 +1,400 @@
-#/bin/sh
-# This configure script written by Brian Callahan <bcallah@devio.us>
+#!/bin/sh
+
+# This configure script written by Brian Callahan <bcallah@openbsd.org>
 # and released into the Public Domain.
 
-# Figure out C compiler.
-# We can probably assume gcc is available, so it's the failsafe.
-printf "Checking for C compiler... "
-if [ "x$CC" != "x" ] ; then
-  cc="$CC"
-else
-  /usr/bin/which cc > /dev/null 2>&1
+asprintfcheck() {
+  cat << EOF > conftest.c
+#include <stdio.h>
+int main(void){asprintf(NULL,NULL);return 0;}
+EOF
+  $cc $cflags $ldflags -o conftest conftest.c > /dev/null 2>&1
   if [ $? -eq 0 ] ; then
-    cc="cc"
+    rm -f conftest conftest.o conftest.c
+    return 0
   else
-    /usr/bin/which clang > /dev/null 2>&1
+    rm -f conftest conftest.o conftest.c
+    return 1
+  fi
+}
+
+cccheck() {
+  if [ ! -z "$CC" ] ; then
+cat << EOF > conftest.c
+int main(void){return 0;}
+EOF
+    $CC $cflags $ldflags -o conftest conftest.c > /dev/null 2>&1
     if [ $? -eq 0 ] ; then
-      cc="clang"
-    else
-      /usr/bin/which gcc > /dev/null 2>&1
+      ./conftest
       if [ $? -eq 0 ] ; then
-	cc="gcc"
+	rm -f conftest conftest.o conftest.c
+	cc="$CC"
+	return 0
       else
-	echo "not found"
-	echo "Please manually set your C compiler with the CC env variable."
+	echo "could not build working executables"
+	echo "Please ensure your C compiler is a native compiler"
 	exit 1
       fi
+    else
+      rm -f conftest conftest.o conftest.c
+    fi
+  fi
+
+  for compiler in cc clang pcc xlc gcc ; do
+cat << EOF > conftest.c
+int main(void){return 0;}
+EOF
+
+    $compiler $cflags $ldflags -o conftest conftest.c > /dev/null 2>&1
+
+    if [ $? -eq 0 ] ; then
+      ./conftest
+      if [ $? -eq 0 ] ; then
+	rm -f conftest conftest.o conftest.c
+	cc="$compiler"
+	return 0
+      else
+	echo "could not build working executables"
+	echo "Please ensure your C compiler is a native compiler"
+	exit 1
+      fi
+    else
+      rm -f conftest conftest.o conftest.c
+    fi
+  done
+  return 1
+}
+
+deadcheck() {
+  cat << EOF > conftest.c
+#include <stdlib.h>
+__dead void usage(void){exit(1);}int main(void){usage();return 0;}
+EOF
+  $cc $cflags $ldflags -o conftest conftest.c > /dev/null 2>&1
+  if [ $? -eq 0 ] ; then
+    rm -f conftest conftest.o conftest.c
+    return 0
+  else
+    rm -f conftest conftest.o conftest.c
+    return 1
+  fi
+}
+
+dead2check() {
+  cat << EOF > conftest.c
+#include <stdlib.h>
+__dead2 void usage(void){exit(1);}int main(void){usage();return 0;}
+EOF
+  $cc $cflags $ldflags -o conftest conftest.c > /dev/null 2>&1
+  if [ $? -eq 0 ] ; then
+    rm -f conftest conftest.o conftest.c
+    return 0
+  else
+    rm -f conftest conftest.o conftest.c
+    return 1
+  fi
+}
+
+noreturncheck() {
+  cat << EOF > conftest.c
+#include <stdlib.h>
+__attribute__((__no_return__)) void usage(void){exit(1);}int main(void){usage();return 0;}
+EOF
+  $cc $cflags $ldflags -o conftest conftest.c > /dev/null 2>&1
+  if [ $? -eq 0 ] ; then
+    rm -f conftest conftest.o conftest.c
+    return 0
+  else
+    rm -f conftest conftest.o conftest.c
+    return 1
+  fi
+}
+
+pledgecheck() {
+  cat << EOF > conftest.c
+#include <unistd.h>
+int main(void){pledge(NULL,NULL);return 0;}
+EOF
+  $cc $cflags $ldflags -o conftest conftest.c > /dev/null 2>&1
+  if [ $? -eq 0 ] ; then
+    rm -f conftest conftest.o conftest.c
+    return 0
+  else
+    rm -f conftest conftest.o conftest.c
+    return 1
+  fi
+}
+
+prognamecheck() {
+  cat << EOF > conftest.c
+#include <stdio.h>
+extern char *__progname;
+int main(void){fprintf(stderr, "%s\n", __progname);return 0;}
+EOF
+  $cc $cflags $ldflags -o conftest conftest.c > /dev/null 2>&1
+  if [ $? -eq 0 ] ; then
+    rm -f conftest conftest.o conftest.c
+    return 0
+  else
+    rm -f conftest conftest.o conftest.c
+    return 1
+  fi
+}
+
+reallocarraycheck() {
+  cat << EOF > conftest.c
+#include <stdlib.h>
+int main(void){reallocarray(NULL, 0, 0);return 0;}
+EOF
+  $cc $cflags $ldflags -o conftest conftest.c > /dev/null 2>&1
+  if [ $? -eq 0 ] ; then
+    rm -f conftest conftest.o conftest.c
+    return 0
+  else
+    rm -f conftest conftest.o conftest.c
+    return 1
+  fi
+}
+
+strlcpycheck() {
+  cat << EOF > conftest.c
+#include <string.h>
+int main(void){strlcpy(NULL,NULL,0);return 0;}
+EOF
+  $cc $cflags $ldflags -o conftest conftest.c > /dev/null 2>&1
+  if [ $? -eq 0 ] ; then
+    rm -f conftest conftest.o conftest.c
+    return 0
+  else
+    rm -f conftest conftest.o conftest.c
+    return 1
+  fi
+}
+
+wflagcheck() {
+  cat << EOF > conftest.c
+int main(void){return 0;}
+EOF
+  $cc -w -o conftest conftest.c > /dev/null 2> conftest.err
+  grep ':' conftest.err > /dev/null 2>&1
+  if [ $? -eq 0 ] ; then
+    rm -f conftest conftest.err conftest.o conftest.c
+    return 1
+  else
+    rm -f conftest conftest.err conftest.o conftest.c
+    return 0
+  fi
+}
+
+# Option variables
+if [ ! -z "$PREFIX" ] ; then
+  prefix="$PREFIX"
+else
+  prefix="/usr/local"
+fi
+
+if [ ! -z "$MANDIR" ] ; then
+  mandir="$MANDIR"
+else
+  mandir="$prefix/man"
+fi
+
+instprog="oyacc"
+fix="oyyfix"
+static=0
+
+# Options
+for opt
+do
+  case "$opt" in
+    --prefix=*)
+	prefix=`echo $opt | cut -d '=' -f 2`
+	;;
+    --mandir=*)
+	mandir=`echo $opt | cut -d '=' -f 2`
+	;;
+    --disable-yacc|--enable-yacc)
+	if [ "x$opt" = "x--enable-yacc" ] ; then
+	  instprog="yacc"
+	  fix="yyfix"
+	else
+	  instprog="oyacc"
+	  fix="oyyfix"
+	fi
+	;;
+    --disable-static|--enable-static)
+	if [ "x$opt" = "x--enable-static" ] ; then
+	  static=1
+	else
+	  static=0
+	fi
+	;;
+    --help|-h)
+	echo "Usage: configure [options]"
+	echo ""
+	echo "Options:"
+	printf "  --help or -h            "
+	echo "Display this help message"
+	printf "  --prefix=PREFIX         "
+	echo "Top level install directory is PREFIX [$prefix]"
+	printf "  --mandir=MANDIR         "
+	echo "Manual pages are installed to MANDIR [$mandir]"
+	printf "  --enable-yacc           "
+	echo "Install executable as yacc [default=no]"
+	printf "  --enable-static         "
+	echo "Statically link executables [default=no]"
+	exit 1
+	;;
+    *)
+	;;
+  esac
+done
+
+if [ ! -z "$CFLAGS" ] ; then
+  cflags="$CFLAGS "
+else
+  cflags=""
+fi
+
+if [ ! -z "$LDFLAGS" ] ; then
+  ldflags="$LDFLAGS "
+else
+  ldflags=""
+fi
+
+printf "checking for C compiler... "
+cccheck
+if [ $? -ne 0 ] ; then
+  echo "not found"
+  echo "Please install a C compiler and re-run configure."
+  exit 1
+else
+  echo "$cc"
+fi
+
+printf "checking for -w compiler flag... "
+wflagcheck
+if [ $? -ne 0 ] ; then
+  echo "no"
+else
+  cflags="$cflags -w"
+  echo "yes"
+fi
+
+printf "checking for OS... "
+os=`uname -s`
+echo "$os"
+
+case "x$os" in
+  "xLinux"|"xCYGWIN"*)
+    cflags="$cflags -D_GNU_SOURCE"
+    ;;
+  "xNetBSD")
+    cflags="$cflags -D_OPENBSD_SOURCE"
+    ;;
+  "xAIX"|"xOS400")
+    cflags="$cflags -D_ALL_SOURCE"
+    ldflags="-lbsd"
+    ;;
+esac
+
+printf "/* Autogenerated by configure */\n\n" > config.h
+
+printf "checking for __dead... "
+deadcheck
+if [ $? -eq 0 ] ; then
+  echo "yes"
+else
+  echo "no"
+  printf "checking for __dead2... "
+  dead2check
+  if [ $? -eq 0 ] ; then
+    echo "#define __dead __dead2" >> config.h
+    echo "yes"
+  else
+    echo "no"
+    printf "checking for __attribute__((__no_return__))... "
+    noreturncheck
+    if [ $? -eq 0 ] ; then
+      echo "#define __dead __attribute__((__no_return__))" >> config.h
+      echo "yes"
+    else
+      echo "#define __dead" >> config.h
+      echo "no"
     fi
   fi
 fi
-echo "$cc"
 
-printf "Checking for yacc... "
-
-/usr/bin/which yacc > /dev/null 2>&1
-
+printf "checking for __progname... "
+prognamecheck
 if [ $? -eq 0 ] ; then
+  echo "#define HAVE_PROGNAME" >> config.h
   echo "yes"
-  yaccoroyacc=oyacc
-  fix=oyyfix
 else
   echo "no"
-  yaccoroyacc=yacc
-  fix=yyfix
 fi
 
-printf "Checking for asprintf... "
-
-cat << EOF > /tmp/checkasprintf.c
-/* This file generated by oyacc configure script.  */
-
-#include <stdio.h>
-
-int
-main(void)
-{
-	char *tmp = "y";
-
-	(void) asprintf(NULL, "%s\n", tmp);
-
-	return 0;
-}
-EOF
-
-$cc -o /tmp/checkasprintf /tmp/checkasprintf.c > /dev/null 2>&1
-
-if [ $? -ne 0 ] ; then
-  echo "no"
-  cppasprintf="-DNEED_ASPRINTF"
-else
+printf "checking for asprintf... "
+asprintfcheck
+if [ $? -eq 0 ] ; then
+  echo "#define HAVE_ASPRINTF" >> config.h
   echo "yes"
-fi
-
-rm -f /tmp/checkasprintf /tmp/checkasprintf.c checkasprintf.o
-
-printf "Checking for reallocarray... "
-
-cat << EOF > /tmp/checkreallocarray.c
-/* This file generated by oyacc configure script.  */
-
-#include <stdlib.h>
-
-int
-main(void)
-{
-	char *tmp;
-
-	tmp = reallocarray(NULL, 1, 1);
-
-	return 0;
-}
-EOF
-
-$cc -o /tmp/checkreallocarray /tmp/checkreallocarray.c > /dev/null 2>&1
-
-if [ $? -ne 0 ] ; then
+else
   echo "no"
-  cppreallocarray="-DNEED_REALLOCARRAY"
-else
-  echo "yes"
 fi
 
-rm -f /tmp/checkreallocarray /tmp/checkreallocarray.c checkreallocarray.o
-
-printf "Checking for strlcpy... "
-
-cat << EOF > /tmp/checkstrlcpy.c
-/* This file generated by oyacc configure script.  */
-
-#include <string.h>
-
-int
-main(void)
-{
-	(void) strlcpy(NULL, "yacc", 4);
-
-	return 0;
-}
-EOF
-
-$cc -o /tmp/checkstrlcpy /tmp/checkstrlcpy.c > /dev/null 2>&1
-
-if [ $? -ne 0 ] ; then
+printf "checking for pledge... "
+pledgecheck
+if [ $? -eq 0 ] ; then
+  echo "#define HAVE_PLEDGE" >> config.h
+  echo "yes"
+else
   echo "no"
-  cppstrlcpy="-DNEED_STRLCPY"
-else
-  echo "yes"
 fi
 
-rm -f /tmp/checkstrlcpy /tmp/checkstrlcpy.c checkstrlcpy.o
-
-printf "Checking for __progname... "
-
-cat << EOF > /tmp/checkprogname.c
-/* This file generated by oyacc configure script.  */
-
-#include <stdio.h>
-
-extern char *__progname;
-
-int
-main(void)
-{
-	(void) fprintf(stderr, "%s\n", __progname);
-
-	return 0;
-}
-EOF
-
-$cc -o /tmp/checkprogname /tmp/checkprogname.c > /dev/null 2>&1
-
-if [ $? -ne 0 ] ; then
+printf "checking for reallocarray... "
+reallocarraycheck
+if [ $? -eq 0 ] ; then
+  echo "#define HAVE_REALLOCARRAY" >> config.h
+  echo "yes"
+else
   echo "no"
-  cppprogname="-DNEED_PROGNAME"
-else
+fi
+
+printf "checking for strlcpy... "
+strlcpycheck
+if [ $? -eq 0 ] ; then
+  echo "#define HAVE_STRLCPY" >> config.h
   echo "yes"
-fi
-
-rm -f /tmp/checkprogname /tmp/checkprogname.c checkprogname.o
-
-echo ""
-echo "Program will be installed as $yaccoroyacc."
-echo "Now type 'make' to build."
-
-os=`uname -s`
-if [ "x$os" = "xOpenBSD" ] ; then
-  cflags="-O2 -pipe -Wall"
-elif [ "x$os" = "xBitrig" ] ; then
-  cflags="-O2 -pipe -Wall"
-elif [ "x$os" = "xFreeBSD" ] ; then
-  cflags="-O2 -pipe -Wall -D__dead=\"__dead2\""
-elif [ "x$os" = "xNetBSD" ] ; then
-  cflags="-O2 -pipe -Wall"
-elif [ "x$os" = "xDragonFly" ] ; then
-  cflags="-O2 -pipe -Wall -D__dead=\"__dead2\""
-elif [ "x$os" = "xDarwin" ] ; then
-  cflags="-O2 -pipe -Wall -D__dead=\"__attribute__((__noreturn__))\""
-elif [ "x$os" = "xLinux" ] ; then
-  cflags="-O2 -pipe -Wall -D_GNU_SOURCE -D__dead=\"__attribute__((__noreturn__))\""
-elif [ "x$os" = "xSunOS" ] ; then
-  if [ "x$CC" = "xgcc" ] ; then
-    cflags="-O2 -pipe -D__dead=\"\""
-  else
-    cflags="-xO2 -D__dead=\"\""
-  fi
-elif [ "x$os" = "xAIX" ] ; then
-  if [ "x$CC" = "xgcc" ] ; then
-    cflags="-O2 -pipe -D__dead=\"\""
-  else
-    cflags="-O3 -qstrict -qro -qroconst -D__dead=\"\""
-  fi
 else
-  os=`uname -s | cut -c 1-6`
-  if [ "x$os" = "xCYGWIN" ] ; then
-    cflags="-O2 -pipe -Wall -D_GNU_SOURCE -D__dead=\"__attribute__((__noreturn__))\""
-  else
-    echo "Unknown operating system, please add the OS to this script"
-    echo "and submit a pull request to https://github.com/ibara/yacc"
-    exit 1
-  fi
+  echo "no"
 fi
 
+printf "creating Makefile... "
 cat << EOF > Makefile
-# This Makefile was generated by configure.
+# This Makefile automatically generated by configure.
 
-CC=	$cc
-CFLAGS=	$cflags $cppreallocarray $cppstrlcpy $cppasprintf $cppprogname
+CC =		$cc
+CFLAGS =	$cflags
+EOF
 
-PREFIX=	/usr/local
-BINDIR=	\${PREFIX}/bin
-MANDIR=	\${PREFIX}/man/man1
+if [ ! -z "$ldflags" ] ; then
+cat << EOF >> Makefile
+LDFLAGS =	$ldflags
+EOF
+fi
 
-PROG=	$yaccoroyacc
-OBJS=	closure.o error.o lalr.o lr0.o main.o mkpar.o output.o reader.o \\
+cat << EOF >> Makefile
+PREFIX =	$prefix
+MANDIR =	$mandir
+PROG =		$instprog
+
+OBJS =	closure.o error.o lalr.o lr0.o main.o mkpar.o output.o reader.o \\
 	skeleton.o symtab.o verbose.o warshall.o portable.o
 
-all: \${OBJS}
+all: \${PROG}
+
+\${PROG}: \${OBJS}
 	\${CC} \${LDFLAGS} -o \${PROG} \${OBJS}
 
 install: all
@@ -231,5 +412,6 @@ clean:
 	rm -f \${PROG} \${OBJS}
 
 distclean: clean
-	rm -f Makefile
+	rm -f Makefile config.h
 EOF
+echo "done"

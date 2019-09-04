@@ -9,7 +9,9 @@
  * and released into the Public Domain.
  */
 
-#ifdef NEED_ASPRINTF
+#include "config.h"
+
+#ifndef HAVE_ASPRINTF
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -31,9 +33,7 @@ asprintf(char **ret, const char *format, ...)
 	}
 
 	if ((retval = vsprintf(*ret, format, ap)) > 31) {
-		(void) fprintf(stderr,
-			       "%s: possible buffer overflow attack!\n",
-			       __progname);
+		(void) fprintf(stderr, "asprintf failed\n");
 		exit(1);
 	}
 
@@ -43,7 +43,7 @@ out:
 	return retval;
 }
 
-#endif /* NEED_ASPRINTF */
+#endif /* HAVE_ASPRINTF */
 
 /*	$OpenBSD: reallocarray.c,v 1.3 2015/09/13 08:31:47 guenther Exp $	*/
 /*
@@ -62,7 +62,7 @@ out:
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifdef NEED_REALLOCARRAY
+#ifndef HAVE_REALLOCARRAY
 
 #include <sys/types.h>
 #include <errno.h>
@@ -90,7 +90,7 @@ reallocarray(void *optr, size_t nmemb, size_t size)
 	return realloc(optr, size * nmemb);
 }
 
-#endif /* NEED_REALLOCARRAY */
+#endif /* HAVE_REALLOCARRAY */
 
 /*	$OpenBSD: strlcpy.c,v 1.15 2016/10/16 17:37:39 dtucker Exp $	*/
 
@@ -110,7 +110,7 @@ reallocarray(void *optr, size_t nmemb, size_t size)
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifdef NEED_STRLCPY
+#ifndef HAVE_STRLCPY
 
 #include <sys/types.h>
 #include <string.h>
@@ -145,4 +145,4 @@ strlcpy(char *dst, const char *src, size_t dsize)
 	return(src - osrc - 1);	/* count does not include NUL */
 }
 
-#endif /* NEED_STRLCPY */
+#endif /* HAVE_STRLCPY */

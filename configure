@@ -287,16 +287,14 @@ echo "$os"
 
 case "x$os" in
   "xLinux"|"xCYGWIN"*)
-    cflags="$cflags -D_GNU_SOURCE"
-    echo "#define __unused" >> config.h
+    cflags="$cflags -D_GNU_SOURCE -D__unused="
     ;;
   "xNetBSD")
     cflags="$cflags -D_OPENBSD_SOURCE"
     ;;
   "xAIX"|"xOS400")
-    cflags="$cflags -D_ALL_SOURCE"
+    cflags="$cflags -D_ALL_SOURCE -D__unused="
     ldflags="-lbsd"
-    echo "#define __unused" >> config.h
     ;;
 esac
 

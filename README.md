@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/ibara/yacc.svg?branch=master)](https://travis-ci.org/ibara/yacc)
+
 yacc
 ====
 `yacc`, or `oyacc`, is a portable version of the OpenBSD Yacc program.
@@ -35,3 +36,4 @@ All C files other than `portable.c` are 3-clause BSD licensed.
 Get a tarball
 -------------
 See releases tab. Please use the uploaded tarball!
+Latest version is oyacc-6.6.

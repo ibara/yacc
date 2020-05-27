@@ -1,18 +1,18 @@
-/defs.h/1.18/Tue Dec  2 15:56:22 2014//
-/main.c/1.29/Result of merge//
-/Makefile/1.5/Fri Oct  4 02:31:31 2019//
-/closure.c/1.15/Fri Oct  4 02:30:28 2019//
-/error.c/1.14/Fri Oct  4 02:30:28 2019//
-/lalr.c/1.19/Fri Oct  4 02:30:28 2019//
-/lr0.c/1.18/Fri Oct  4 02:30:28 2019//
-/mkpar.c/1.19/Fri Oct  4 02:30:28 2019//
-/output.c/1.26/Fri Oct  4 02:30:28 2019//
-/reader.c/1.34/Fri Oct  4 02:30:28 2019//
-/skeleton.c/1.39/Fri Oct  4 02:30:28 2019//
-/symtab.c/1.17/Fri Oct  4 02:30:28 2019//
-/verbose.c/1.14/Fri Oct  4 02:30:28 2019//
-/warshall.c/1.11/Fri Oct  4 02:30:28 2019//
-/yacc.1/1.32/Fri Oct  4 02:30:28 2019//
-/yyfix.1/1.6/Fri Oct  4 02:30:28 2019//
-/yyfix.sh/1.3/Fri Oct  4 02:30:28 2019//
 D/PSD.doc////
+/Makefile/1.5/Wed May 27 23:38:11 2020//
+/closure.c/1.15/Wed May 27 23:38:05 2020//
+/defs.h/1.20/Result of merge//
+/error.c/1.17/Wed May 27 23:38:11 2020//
+/lalr.c/1.19/Wed May 27 23:38:05 2020//
+/lr0.c/1.18/Wed May 27 23:38:05 2020//
+/main.c/1.34/Result of merge//
+/mkpar.c/1.19/Wed May 27 23:38:06 2020//
+/output.c/1.27/Wed May 27 23:38:11 2020//
+/reader.c/1.34/Wed May 27 23:38:06 2020//
+/skeleton.c/1.39/Wed May 27 23:38:06 2020//
+/symtab.c/1.17/Wed May 27 23:38:06 2020//
+/verbose.c/1.14/Wed May 27 23:38:06 2020//
+/warshall.c/1.11/Wed May 27 23:38:06 2020//
+/yacc.1/1.33/Wed May 27 23:38:11 2020//
+/yyfix.1/1.6/Wed May 27 23:38:06 2020//
+/yyfix.sh/1.3/Wed May 27 23:38:06 2020//

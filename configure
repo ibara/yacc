@@ -98,7 +98,7 @@ EOF
 noreturncheck() {
   cat << EOF > conftest.c
 #include <stdlib.h>
-__attribute__((__no_return__)) void usage(void){exit(1);}int main(void){usage();return 0;}
+__attribute__((__noreturn__)) void usage(void){exit(1);}int main(void){usage();return 0;}
 EOF
   $cc $cflags $ldflags -o conftest conftest.c > /dev/null 2>&1
   if [ $? -eq 0 ] ; then
@@ -313,10 +313,10 @@ else
     echo "yes"
   else
     echo "no"
-    printf "checking for __attribute__((__no_return__))... "
+    printf "checking for __attribute__((__noreturn__))... "
     noreturncheck
     if [ $? -eq 0 ] ; then
-      echo "#define __dead __attribute__((__no_return__))" >> config.h
+      echo "#define __dead __attribute__((__noreturn__))" >> config.h
       echo "yes"
     else
       echo "#define __dead" >> config.h

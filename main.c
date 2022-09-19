@@ -40,6 +40,10 @@
 #include <unistd.h>
 #include "defs.h"
 
+#ifndef HAVE_PROGNAME
+char *__progname;
+#endif
+
 char dflag;
 char lflag;
 char rflag;
